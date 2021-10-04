@@ -41,7 +41,7 @@ elseif cfg.analysis == 'wholebrain'
     cfg.results.dir = fullfile(perm.res_dir{1}, perm.suffix_res_dir, 'wholebrain');
 end
 
-% decoding(cfg); % run permutation
+decoding(cfg); % run permutation
 
 
 perm_res_dir = cfg.results.dir;

@@ -180,7 +180,7 @@ elseif strcmpi(dcdg.options.output,'accuracy')
     cfg.results.output = 'accuracy_minus_chance';
 end
 
-% decoding(cfg);
+decoding(cfg);
 
 res_dir = cfg.results.dir;
 
