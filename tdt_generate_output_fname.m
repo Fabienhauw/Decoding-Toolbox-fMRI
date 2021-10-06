@@ -1,6 +1,6 @@
-function fname = tdt_dcdg_generate_output_fname( job, analysis, suffix )
+function fname = tdt_dcdg_generate_output_fname(analysis, suffix )
 
-if nargin < 3
+if nargin < 2
     suffix = '';
 end
 

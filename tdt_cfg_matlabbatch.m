@@ -471,7 +471,7 @@ end
 
 function out = prog_dcdg( job )
 
-fname = tdt_generate_output_fname( job, 'dcdg' );
+fname = tdt_generate_output_fname('dcdg' );
 
 job.fname = fname;
 res_dir = tdt_run_decoding(job);
@@ -504,7 +504,7 @@ end % function
 
 function out = prog_perm( job )
 
-fname = tdt_generate_output_fname( job, 'perm' );
+fname = tdt_generate_output_fname('perm' );
 job.fname = fname;
 
 perm_res_dir = tdt_run_permutations(job);
@@ -536,8 +536,8 @@ end % function
 
 function out = prog_ttest( job )
 
-fname_pvalue = tdt_generate_output_fname( job, 'ttest', 'p_value' );
-fname_inv_pvalue = tdt_generate_output_fname( job, 'ttest', '1-p_value' );
+fname_pvalue = tdt_generate_output_fname('ttest', 'p_value' );
+fname_inv_pvalue = tdt_generate_output_fname( 'ttest', '1-p_value' );
 
 job.fname_pvalue        = fname_pvalue;
 job.fname_inv_pvalue    = fname_inv_pvalue;
@@ -572,7 +572,7 @@ end % function
 
 function out = prog_nft( job )
 
-fname = tdt_generate_output_fname( job, 'nft', 'p_value' );
+fname = tdt_generate_output_fname('nft', 'p_value' );
 
 job.fname = fname;
 [p_nifti one_minus_p_nifti] = tdt_run_nft(job);
