@@ -557,7 +557,7 @@ function dep = vout_ttest( ~ )
 
 dep            = cfg_dep;
 dep(1).sname      = 'T-test results';
-dep(1).src_output = substruct('.','files');
+dep(1).src_output = substruct('.','files', '()', {1});
 dep(1).tgt_spec   = cfg_findspec({{'filter','mat','strtype','e'}});
 
 dep(2).sname      = '1 - T-test results';
@@ -587,12 +587,12 @@ function dep = vout_nft( ~ )
 
 dep            = cfg_dep;
 dep(1).sname      = 'Nifti of p value';
-dep(1).src_output = substruct('.','files');
+dep(1).src_output = substruct('.','files', '()', {1});
 dep(1).tgt_spec   = cfg_findspec({{'filter','image','strtype','e'}});
 
 dep            = cfg_dep;
 dep(2).sname      = 'Nifti of 1-p value';
-dep(2).src_output = substruct('.','files');
+dep(2).src_output = substruct('.','files', '()', {2});
 dep(2).tgt_spec   = cfg_findspec({{'filter','image','strtype','e'}});
 
 end % function

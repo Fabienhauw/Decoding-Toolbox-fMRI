@@ -16,10 +16,7 @@ if nargin==0, help(mfilename('fullpath')); return; end
 fname = nft.fname;
 
 load(nft.pmat{1});
-if exist('one_minus_p') & ~exist('p')
-    p = one_minus_p;
-end
-
+load(nft.pmat{2});
 
 fprintf('[%s]: Final output = %s \n', mfilename, fname)
 

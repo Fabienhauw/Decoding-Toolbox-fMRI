@@ -45,5 +45,5 @@ one_minus_p=1-p;
 save('p_value.mat','p');
 save('1-p_value.mat','one_minus_p');
 
-pmat_dir = cfg.results.dir;
+pmat_dir = ttest.perm_dir{1};
 end
