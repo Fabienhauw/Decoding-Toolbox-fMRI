@@ -38,14 +38,18 @@ regmask = ~cellfun('isempty',regmask);
 cond_names = regressor_names(1,:);
 cond_names(regmask) = [];
 spmc_reg = {'SPM constant'};
-label_names=setdiff(unique(regressor_names(1,:)),spmc_reg);
+label_names = setdiff(unique(cond_names(1,:)),spmc_reg);
+label_names_disp = label_names{ln};
+for ln = 1 : length(label_names)-1
+    label_names_disp = [label_names_disp ', ' label_names{ln+1}]
+end
 
 labelname1 = dcdg.subj.conds.cond1;
 labelname1bis = sprintf('%s%s', '\w*',labelname1, '\w*');
 if sum(~cellfun('isempty',regexp(label_names,labelname1bis))) == 0
-    msge1 = sprintf('This label name does not exist, please be careful to the case and re-enter a new one.');
+    msge1 = sprintf('This label name does not exist, please be careful to the case and re-enter a new one among: \n\n%s', label_names_disp);
     error(msge1);
-    label_names
+    error(label_names_disp);
 end
 labelname2 = dcdg.subj.conds.cond2;
 labelname2bis = sprintf('%s%s', '\w*',labelname2, '\w*');
