@@ -39,9 +39,9 @@ cond_names = regressor_names(1,:);
 cond_names(regmask) = [];
 spmc_reg = {'SPM constant'};
 label_names = setdiff(unique(cond_names(1,:)),spmc_reg);
-label_names_disp = label_names{ln};
+label_names_disp = label_names{1};
 for ln = 1 : length(label_names)-1
-    label_names_disp = [label_names_disp ', ' label_names{ln+1}]
+    label_names_disp = [label_names_disp ', ' label_names{ln+1}];
 end
 
 labelname1 = dcdg.subj.conds.cond1;
@@ -129,7 +129,7 @@ subDirs = files(dirFlags);
 for dirname = 1 : length(subDirs)
     if ~isempty(regexp(subDirs(dirname).name,results_fold_inv))
         results_folder=results_fold_inv;
-        fprintf('This analysis already exists, with %s labelled Condition1 and conversely (same decoding). Overwriting in the corresponding folder', final_labelname2)
+        fprintf('This analysis already exists, with %s labelled Condition1 and inversely (same decoding). Overwriting in the corresponding folder', final_labelname2)
     end
 end
 cfg.results.overwrite = 1;
@@ -144,18 +144,22 @@ if issubfield(dcdg.options.anal,'searchlight')
     cfg.searchlight.radius = dcdg.options.anal.searchlight.rad; % this will yield a searchlight radius of 12 units (here: mm).
     cfg.searchlight.spherical = 0;
     cfg.files.mask = dcdg.options.anal.searchlight.mask;
-    if ~strcmpi(cfg.files.mask,'mask.nii')
-        [pth,nam,~] = spm_fileparts(cfg.files.mask{1});
-        cfg.results.dir = sprintf('%s_mask_%s', fullfile(beta_loc,results_folder),nam);
+    [pth,nam,~] = spm_fileparts(cfg.files.mask{1});
+    if ~strcmpi(nam,'mask')
+        cfg.results.dir = sprintf('%s_%s', fullfile(beta_loc,results_folder),nam);
+    else
+        cfg.results.dir = fullfile(beta_loc,results_folder);
     end
 elseif issubfield(dcdg.options.anal,'ROI')
     cfg.analysis = 'ROI';
     cfg.files.mask = dcdg.options.anal.ROI.mask_roi;
-    cfg.results.dir = sprintf('%s_ROI_%s', fullfile(beta_loc,results_folder),cfg.files.mask);
+    [pth,nam,~] = spm_fileparts(cfg.files.mask{1});
+    cfg.results.dir = sprintf('%s_ROI_%s', fullfile(beta_loc,results_folder, nam));
 elseif issubfield(dcdg.options.anal,'wholebrain')
     cfg.analysis = 'wholebrain';
     cfg.files.mask = dcdg.options.anal.wholebrain.mask_wholebrain;
-    cfg.results.dir = sprintf('%s_wholebrain_%s', fullfile(beta_loc,results_folder),cfg.files.mask);
+    [pth,nam,~] = spm_fileparts(cfg.files.mask{1});
+    cfg.results.dir = sprintf('%s_wholebrain_%s', fullfile(beta_loc,results_folder, nam));
 end
 
 if ~isdir(cfg.results.dir)
@@ -180,7 +184,7 @@ end
 
 if strcmpi(dcdg.options.analysis,'auc')
     cfg.results.output = 'AUC_minus_chance';
-elseif strcmpi(dcdg.options.output,'accuracy')
+elseif strcmpi(dcdg.options.analysis,'accuracy')
     cfg.results.output = 'accuracy_minus_chance';
 end
 
