@@ -35,7 +35,8 @@ ref = dir(sprintf('res_%s*.mat',output_type));
 
 for perm = 1:length(ref)
     load (ref(perm).name);
-    reference(:,perm) = results.AUC_minus_chance.output;
+    fn = fieldnames(results); mask = ~cellfun(@isempty,(regexp(fn, '\w*minus_chance'))); fn = fn{mask};
+    reference(:,perm) = eval(sprintf('results.%s.output',fn));
 end
 
 tail = ttest.options;

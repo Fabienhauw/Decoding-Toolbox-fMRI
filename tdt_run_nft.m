@@ -64,7 +64,7 @@ for i_output = 1:n_outputs
     if exist(resultsvol_hdr.fname,'file')
         if cfg.results.overwrite
             % simply overwrite the file
-            warning('decoding_write_results:overwrite_results', 'Resultfile %s already existed. Overwriting it (because cfg.results.overwrite = 1)',resultsvol_hdr.fname)
+            warning('decoding_write_results:overwrite_results', 'Resultfile %s already existed. Overwriting it (because cfg.results.overwrite = 1). \n',resultsvol_hdr.fname)
         else
             % dont overwrite file, copy it
             [old_results_path, old_results_file, dummy_fext] = fileparts(resultsvol_hdr.fname);
