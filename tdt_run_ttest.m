@@ -21,7 +21,7 @@ fname_inv_pvalue = ttest.fname_inv_pvalue;
 
 fprintf('[%s]: Final output = %s / %s \n', mfilename, fname_pvalue, fname_inv_pvalue)
 
-n_correct = [];
+n_correct = [];    
 load(fullfile(ttest.dcdg_dir{1}, 'res_cfg.mat'))
 outputname = cfg.results.output{1};
 output_type = strsplit(outputname, '_');
