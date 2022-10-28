@@ -132,12 +132,18 @@ for dirname = 1 : length(subDirs)
         fprintf('This analysis already exists, with %s labelled Condition1 and inversely (same decoding). Overwriting in the corresponding folder', final_labelname2)
     end
 end
-cfg.results.overwrite = 1;
+cfg.results.overwrite = dcdg.options.nrun;
 cfg.design = make_design_cv(cfg);
 
 %--------------------------------------------------------------------------
 % Different other options
 %--------------------------------------------------------------------------
+if isempty(dcdg.subj.res_dir)
+    res_dir = fullfile(beta_loc,results_folder);
+else
+    res_dir = dcdg.subj.res_dir{1};
+end
+
 if issubfield(dcdg.options.anal,'searchlight')
     cfg.analysis = 'searchlight';
     cfg.searchlight.unit = dcdg.options.anal.searchlight.unit; % comment or set to 'voxels' if you want normal voxels
@@ -145,21 +151,33 @@ if issubfield(dcdg.options.anal,'searchlight')
     cfg.searchlight.spherical = 0;
     cfg.files.mask = dcdg.options.anal.searchlight.mask;
     [pth,nam,~] = spm_fileparts(cfg.files.mask{1});
-    if ~strcmpi(nam,'mask')
-        cfg.results.dir = sprintf('%s_%s', fullfile(beta_loc,results_folder),nam);
+    if isempty(dcdg.subj.res_dir)
+        if ~strcmpi(nam,'mask')
+            cfg.results.dir = sprintf('%s_in_mask_%s', res_dir,nam);
+        else
+            cfg.results.dir = res_dir;
+        end
     else
-        cfg.results.dir = fullfile(beta_loc,results_folder);
+        cfg.results.dir = res_dir;
     end
 elseif issubfield(dcdg.options.anal,'ROI')
     cfg.analysis = 'ROI';
     cfg.files.mask = dcdg.options.anal.ROI.mask_roi;
     [pth,nam,~] = spm_fileparts(cfg.files.mask{1});
-    cfg.results.dir = sprintf('%s_ROI_%s', fullfile(beta_loc,results_folder, nam));
+    if isempty(dcdg.subj.res_dir)
+        cfg.results.dir = sprintf('%s_ROI_%s', res_dir,nam);
+    else
+        cfg.results.dir = sprintf('%s_ROI', res_dir);
+    end
 elseif issubfield(dcdg.options.anal,'wholebrain')
     cfg.analysis = 'wholebrain';
     cfg.files.mask = dcdg.options.anal.wholebrain.mask_wholebrain;
     [pth,nam,~] = spm_fileparts(cfg.files.mask{1});
-    cfg.results.dir = sprintf('%s_wholebrain_%s', fullfile(beta_loc,results_folder, nam));
+    if isempty(dcdg.subj.res_dir)
+        cfg.results.dir = sprintf('%s_wholebrain_%s', res_dir,nam);
+    else
+        cfg.results.dir = sprintf('%s_wholebrain', res_dir);
+    end
 end
 
 if ~isdir(cfg.results.dir)

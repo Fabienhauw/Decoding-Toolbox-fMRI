@@ -9,10 +9,20 @@ addpath(spm_file(mfilename('fullpath'),'path'));
 
 %% Make decoding
 
+dcdg_overwrite         = cfg_menu;
+dcdg_overwrite.tag     = 'overwrite';
+dcdg_overwrite.name    = 'Overwrite';
+dcdg_overwrite.help    = {
+'If you want to overwrite your results, select 1.'
+    };
+dcdg_overwrite.labels = {'Yes', 'No'};
+dcdg_overwrite.values = {1 0};
+dcdg_overwrite.val    = {0};
+
 %--------------------------------------------------------------------------
 % nrun Number of run
 %--------------------------------------------------------------------------
-dcdg_nrun        = cfg_entry;
+dcdg_nrun         = cfg_entry;
 dcdg_nrun.tag     = 'nrun';
 dcdg_nrun.name    = 'Number of run';
 dcdg_nrun.help    = {
@@ -205,7 +215,7 @@ dcdg_disp.val    = {'no'};
 dcdg_options      = cfg_branch;
 dcdg_options.tag  = 'options';
 dcdg_options.name = 'Decoding Options';
-dcdg_options.val  = {dcdg_nrun dcdg_anal dcdg_meth dcdg_out dcdg_disp};
+dcdg_options.val  = {dcdg_nrun dcdg_anal dcdg_meth dcdg_out dcdg_disp dcdg_overwrite};
 dcdg_options.help = {'Various settings for decoding.'};
 
 %--------------------------------------------------------------------------
@@ -218,6 +228,18 @@ dcdg_betaloc.help    = {'Select a directory where you can find the Beta.'};
 dcdg_betaloc.filter  = 'dir';
 dcdg_betaloc.ufilter = '.*';
 dcdg_betaloc.num     = [1 1];
+
+%--------------------------------------------------------------------------
+% path Path
+%--------------------------------------------------------------------------
+dcdg_resdir         = cfg_files;
+dcdg_resdir.tag     = 'res_dir';
+dcdg_resdir.name    = 'Results directory';
+dcdg_resdir.help    = {'Select a directory where you want to write the results. Default will be the Beta directory.'};
+dcdg_resdir.filter  = 'dir';
+dcdg_resdir.ufilter = '.*';
+dcdg_resdir.num     = [0 1];
+dcdg_resdir.val     = {''};
 
 %--------------------------------------------------------------------------
 % conds Conditions to decode between
@@ -251,7 +273,7 @@ dcdg_conds.help = {'Conditions to decode.'};
 dcdg_subj      = cfg_branch;
 dcdg_subj.tag  = 'subj';
 dcdg_subj.name = 'Subject';
-dcdg_subj.val  = {dcdg_betaloc dcdg_conds};
+dcdg_subj.val  = {dcdg_betaloc dcdg_resdir dcdg_conds};
 dcdg_subj.help = {'Data for this subject. The same parameters are used within subject.'};
 
 %--------------------------------------------------------------------------
