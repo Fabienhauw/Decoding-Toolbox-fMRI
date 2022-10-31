@@ -141,7 +141,7 @@ cfg.design = make_design_cv(cfg);
 if isempty(dcdg.subj.res_dir)
     res_dir = fullfile(beta_loc,results_folder);
 else
-    res_dir = dcdg.subj.res_dir{1};
+    res_dir = fullfile(dcdg.subj.res_dir{1}, results_folder);
 end
 
 if issubfield(dcdg.options.anal,'searchlight')
@@ -151,12 +151,8 @@ if issubfield(dcdg.options.anal,'searchlight')
     cfg.searchlight.spherical = 0;
     cfg.files.mask = dcdg.options.anal.searchlight.mask;
     [pth,nam,~] = spm_fileparts(cfg.files.mask{1});
-    if isempty(dcdg.subj.res_dir)
-        if ~strcmpi(nam,'mask')
-            cfg.results.dir = sprintf('%s_in_mask_%s', res_dir,nam);
-        else
-            cfg.results.dir = res_dir;
-        end
+    if isempty(dcdg.subj.res_dir) & ~strcmpi(nam,'mask')
+        cfg.results.dir = sprintf('%s_in_mask_%s', res_dir,nam);
     else
         cfg.results.dir = res_dir;
     end
