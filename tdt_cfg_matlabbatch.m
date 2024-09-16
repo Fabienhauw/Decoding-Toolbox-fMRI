@@ -103,7 +103,7 @@ dcdg_rad.name    = 'Radius';
 dcdg_rad.help    = {'Radius size of the sphere within which you will decode.'};
 dcdg_rad.strtype = 'r';
 dcdg_rad.num     = [1  1];
-dcdg_rad.val     = {12};
+dcdg_rad.val     = {8};
 
 %--------------------------------------------------------------------------
 % dcdg Mask for the searchlight decoding
@@ -286,7 +286,6 @@ dcdg_dsubjs.help   = {'List of subjects.'};
 dcdg_dsubjs.values = {dcdg_subj};
 dcdg_dsubjs.num    = [1 Inf];
 
-
 %--------------------------------------------------------------------------
 % Decoding
 %--------------------------------------------------------------------------
@@ -300,6 +299,336 @@ dcdg.help = {
 
 dcdg.prog = @prog_dcdg;
 dcdg.vout = @vout_dcdg;
+
+%% Cross decoding
+crossdcdg_overwrite         = cfg_menu;
+crossdcdg_overwrite.tag     = 'overwrite';
+crossdcdg_overwrite.name    = 'Overwrite';
+crossdcdg_overwrite.help    = {
+'If you want to overwrite your results, select 1.'
+    };
+crossdcdg_overwrite.labels = {'Yes', 'No'};
+crossdcdg_overwrite.values = {1 0};
+crossdcdg_overwrite.val    = {0};
+
+%--------------------------------------------------------------------------
+% nrun Number of run
+%--------------------------------------------------------------------------
+crossdcdg_nrun         = cfg_entry;
+crossdcdg_nrun.tag     = 'nrun';
+crossdcdg_nrun.name    = 'Number of run';
+crossdcdg_nrun.help    = {
+'How many run/chunks do you have in your experiment (the number of regressors you have for each condition, ex: Beta 1, Beta 6, Beta11, Beta16 for your first condition, in a experiment with 5 conditions and 4 runs).'
+    };
+crossdcdg_nrun.strtype = 'r';
+crossdcdg_nrun.num     = [1  1];
+crossdcdg_nrun.val     = {0};
+
+%--------------------------------------------------------------------------
+% wholebrain Wholebrain
+%--------------------------------------------------------------------------
+crossdcdg_mask_wholebrain         = cfg_files;
+crossdcdg_mask_wholebrain.tag     = 'mask_wholebrain';
+crossdcdg_mask_wholebrain.name    = 'Wholebrain Mask';
+crossdcdg_mask_wholebrain.help    = {
+    'Use mask in beta dir (e.g. SPM mask) as brain mask.'
+    }';
+crossdcdg_mask_wholebrain.filter  = 'nifti';
+crossdcdg_mask_wholebrain.ufilter = '.*nii';
+crossdcdg_mask_wholebrain.num     = [1 1];
+crossdcdg_mask_wholebrain.preview = @(f) spm_check_registration(char(f));
+
+crossdcdg_Wholebrain         = cfg_branch;
+crossdcdg_Wholebrain.tag     = 'wholebrain';
+crossdcdg_Wholebrain.name    = 'Wholebrain';
+crossdcdg_Wholebrain.val     = {crossdcdg_mask_wholebrain};
+crossdcdg_Wholebrain.help    = {
+    'You must set a mask which will be used as a ROI'
+    }';
+
+%--------------------------------------------------------------------------
+% roi ROI
+%--------------------------------------------------------------------------
+crossdcdg_mask_roi         = cfg_files;
+crossdcdg_mask_roi.tag     = 'mask_roi';
+crossdcdg_mask_roi.name    = 'ROI Mask';
+crossdcdg_mask_roi.help    = {
+    'This mask will be used as a ROI, and decoding will be done inside.'
+    }';
+crossdcdg_mask_roi.filter  = 'nifti';
+crossdcdg_mask_roi.ufilter = '.*nii';
+crossdcdg_mask_roi.num     = [1 1];
+crossdcdg_mask_roi.preview = @(f) spm_check_registration(char(f));
+
+crossdcdg_ROI         = cfg_branch;
+crossdcdg_ROI.tag     = 'ROI';
+crossdcdg_ROI.name    = 'ROI';
+crossdcdg_ROI.val     = {crossdcdg_mask_roi};
+crossdcdg_ROI.help    = {
+    'You must set a mask which will be used as a ROI'
+    }';
+
+%--------------------------------------------------------------------------
+% rad Radius of searchlight
+%--------------------------------------------------------------------------
+crossdcdg_unit         = cfg_menu;
+crossdcdg_unit.tag     = 'unit';
+crossdcdg_unit.name    = 'Unit';
+crossdcdg_unit.help    = {'Units you want to use for your sphere: mm or vox.'};
+crossdcdg_unit.labels = {
+    'mm'
+    'Voxel'
+    }';
+crossdcdg_unit.values = {
+    'mm'
+    'voxels'
+    }';
+crossdcdg_unit.val     = {'mm'};
+
+%--------------------------------------------------------------------------
+% crossdcdg Size of radius
+%--------------------------------------------------------------------------
+
+crossdcdg_rad         = cfg_entry;
+crossdcdg_rad.tag     = 'rad';
+crossdcdg_rad.name    = 'Radius';
+crossdcdg_rad.help    = {'Radius size of the sphere within which you will decode.'};
+crossdcdg_rad.strtype = 'r';
+crossdcdg_rad.num     = [1  1];
+crossdcdg_rad.val     = {8};
+
+%--------------------------------------------------------------------------
+% crossdcdg Mask for the searchlight decoding
+%--------------------------------------------------------------------------
+
+crossdcdg_mask         = cfg_files;
+crossdcdg_mask.tag     = 'mask';
+crossdcdg_mask.name    = 'Mask';
+crossdcdg_mask.help    = {
+    'This mask defines the volume in which you will perform decoding.'
+    'Use mask in beta dir (e.g. SPM mask) as a mask.'
+    }';
+crossdcdg_mask.filter  = 'nifti';
+crossdcdg_mask.ufilter = '.nii';
+crossdcdg_mask.num     = [1 1];
+crossdcdg_mask.preview = @(f) spm_check_registration(char(f));
+
+
+crossdcdg_searchlight         = cfg_branch;
+crossdcdg_searchlight.tag     = 'searchlight';
+crossdcdg_searchlight.name    = 'Searchlight';
+crossdcdg_searchlight.val     = {crossdcdg_unit crossdcdg_rad crossdcdg_mask};
+crossdcdg_searchlight.help    = {
+    'You may specify the radius of the searchlight (in voxels or mm).'
+    }';
+
+%--------------------------------------------------------------------------
+% crossdcdg Analysis method
+%--------------------------------------------------------------------------
+
+crossdcdg_anal        = cfg_choice;
+crossdcdg_anal.tag    = 'anal';
+crossdcdg_anal.name   = 'Analysis method';
+crossdcdg_anal.help   = {
+    'Determines the type of analysis that is performed: searchlight, ROI or wholebrain (in this case, the whole brain will be considered as a "big" ROI.'
+    ''
+    'In the case of searchlight analysis, it will use a sphere of predefined radius, in which the searchlight will analyse the activation pattern'
+    'ROI and wholebrain analyses will give you a variable, while searchlight analysis will give you a map of accuracy/AUC...'
+    }';
+crossdcdg_anal.values = { crossdcdg_searchlight crossdcdg_ROI crossdcdg_Wholebrain };
+crossdcdg_anal.val    = {crossdcdg_searchlight};
+
+%--------------------------------------------------------------------------
+% crossdcdg Analysis method
+%--------------------------------------------------------------------------
+
+crossdcdg_meth        = cfg_menu;
+crossdcdg_meth.tag    = 'meth';
+crossdcdg_meth.name   = 'Decoding method';
+crossdcdg_meth.help   = {
+    'Choose the method you want to perform (classification or regression). If your classifier supports the kernel method (currently only libsvm), then you can also choose classification_kernel (our default).'
+    'Classification kernel: this is our default anyway.'
+    'Classification: this is slower, but sometimes necessary'
+    'Regression: choose this for regression'
+    }';
+crossdcdg_meth.labels = {
+    'Classification kernel'
+    'Classification'
+    'Regression'
+    }';
+crossdcdg_meth.values = {
+    'kernel'
+    'classif'
+    'regression'
+    }';
+crossdcdg_meth.val    = {'kernel'};
+
+%--------------------------------------------------------------------------
+% crossdcdg Results output
+%--------------------------------------------------------------------------
+
+crossdcdg_out        = cfg_menu;
+crossdcdg_out.tag    = 'analysis';
+crossdcdg_out.name   = 'Analysis method';
+crossdcdg_out.help   = {
+    'Define which measures/transformations you like to get as ouput. You have the option to get different measures of the decoding. : you can get the accuracy for each voxel, the accuracy minus chance, or AUC minus chance.'
+    }';
+crossdcdg_out.labels = {
+    'AUC minus chance'
+    'Accuracy minus chance'
+    }';
+crossdcdg_out.values = {
+    'auc'
+    'accuracy'
+    }';
+crossdcdg_out.val    = {'auc'};
+
+%--------------------------------------------------------------------------
+% crossdcdg Display design
+%--------------------------------------------------------------------------
+crossdcdg_disp       = cfg_menu;
+crossdcdg_disp.tag    = 'display';
+crossdcdg_disp.name   = 'Display design';
+crossdcdg_disp.help   = {
+    }';
+crossdcdg_disp.labels = {
+    'Yes'
+    'No'
+    }';
+crossdcdg_disp.values = {
+    'yes'
+    'no'
+    }';
+crossdcdg_disp.val    = {'no'};
+
+%--------------------------------------------------------------------------
+% doptions Decoding Options
+%--------------------------------------------------------------------------
+crossdcdg_options      = cfg_branch;
+crossdcdg_options.tag  = 'options';
+crossdcdg_options.name = 'Cross decoding Options';
+crossdcdg_options.val  = {crossdcdg_nrun crossdcdg_anal crossdcdg_meth crossdcdg_out crossdcdg_disp crossdcdg_overwrite};
+crossdcdg_options.help = {'Various settings for cross decoding.'};
+
+%--------------------------------------------------------------------------
+% path Path
+%--------------------------------------------------------------------------
+crossdcdg_betaloc         = cfg_files;
+crossdcdg_betaloc.tag     = 'dir';
+crossdcdg_betaloc.name    = 'Directory';
+crossdcdg_betaloc.help    = {'Select a directory where you can find the Beta.'};
+crossdcdg_betaloc.filter  = 'dir';
+crossdcdg_betaloc.ufilter = '.*';
+crossdcdg_betaloc.num     = [1 1];
+
+%--------------------------------------------------------------------------
+% path Path
+%--------------------------------------------------------------------------
+crossdcdg_resdir         = cfg_files;
+crossdcdg_resdir.tag     = 'res_dir';
+crossdcdg_resdir.name    = 'Results directory';
+crossdcdg_resdir.help    = {'Select a directory where you want to write the results. Default will be the Beta directory.'};
+crossdcdg_resdir.filter  = 'dir';
+crossdcdg_resdir.ufilter = '.*';
+crossdcdg_resdir.num     = [0 1];
+crossdcdg_resdir.val     = {''};
+
+%--------------------------------------------------------------------------
+% conds Conditions to decode between
+%--------------------------------------------------------------------------
+
+crossdcdg_cond1         = cfg_entry;
+crossdcdg_cond1.tag     = 'cond1';
+crossdcdg_cond1.name    = 'First condition';
+crossdcdg_cond1.help    = {'Enter the name of the first condition you want to decode (it has to be the same orthography as your Betas).'};
+crossdcdg_cond1.strtype = 's';
+crossdcdg_cond1.val     = {''};
+
+crossdcdg_cond2         = cfg_entry;
+crossdcdg_cond2.tag     = 'cond2';
+crossdcdg_cond2.name    = 'Second condition';
+crossdcdg_cond2.help    = {'Enter the name of the second condition you want to decode (it has to be the same orthography as your Betas).'};
+crossdcdg_cond2.strtype = 's';
+crossdcdg_cond2.val     = {''};
+
+crossdcdg_cond3         = cfg_entry;
+crossdcdg_cond3.tag     = 'cond3';
+crossdcdg_cond3.name    = 'Third condition';
+crossdcdg_cond3.help    = {'Enter the name of the second condition you want to decode (it has to be the same orthography as your Betas).'};
+crossdcdg_cond3.strtype = 's';
+crossdcdg_cond3.val     = {''};
+
+crossdcdg_cond4         = cfg_entry;
+crossdcdg_cond4.tag     = 'cond4';
+crossdcdg_cond4.name    = 'Fourth condition';
+crossdcdg_cond4.help    = {'Enter the name of the second condition you want to decode (it has to be the same orthography as your Betas).'};
+crossdcdg_cond4.strtype = 's';
+crossdcdg_cond4.val     = {''};
+
+
+crossdcdg_conds      = cfg_branch;
+crossdcdg_conds.tag  = 'conds';
+crossdcdg_conds.name = 'Conditions';
+crossdcdg_conds.val  = { crossdcdg_cond1 crossdcdg_cond2 crossdcdg_cond3 crossdcdg_cond4 };
+crossdcdg_conds.help = {'Conditions to decode.'
+    'You can order them in whatever order you want, you will have to specify the design of your cross decoding on "Xclass"'};
+
+%--------------------------------------------------------------------------
+% labels decoder design
+%--------------------------------------------------------------------------
+crossdcdg_cond_labels         = cfg_entry;
+crossdcdg_cond_labels.tag     = 'labels';
+crossdcdg_cond_labels.name    = 'Labels of the condition you want to classify';
+crossdcdg_cond_labels.help    = {'Specify what conditions you want to classify.'
+    'E.g. if you have conditions AX, BX, AY, BY, with the labels [1 -1 1 -1], you will classify cond. A vs cond. B.'};
+crossdcdg_cond_labels.strtype = 'r';
+
+%--------------------------------------------------------------------------
+% xclass Xclass design
+%--------------------------------------------------------------------------
+crossdcdg_cond_xclass         = cfg_entry;
+crossdcdg_cond_xclass.tag     = 'xclass';
+crossdcdg_cond_xclass.name    = 'Design of the cross-validation';
+crossdcdg_cond_xclass.help    = {'This variable is used to distinguish training and test data. Cross classification is performed from the lower to the higher number (e.g. from 1 to 2).'
+    'For example, if you have 4 conditions AX, BX, AY, BY and want to classify A vs B in modality X and generalize (cross classify) in modality Y, enter [1 1 2 2].'};
+crossdcdg_cond_xclass.strtype = 'r';
+crossdcdg_cond_xclass.num     = [1 4];
+
+%--------------------------------------------------------------------------
+% subj Subject
+%--------------------------------------------------------------------------
+
+crossdcdg_subj      = cfg_branch;
+crossdcdg_subj.tag  = 'subj';
+crossdcdg_subj.name = 'Subject';
+crossdcdg_subj.val  = {crossdcdg_betaloc crossdcdg_resdir crossdcdg_conds crossdcdg_cond_labels crossdcdg_cond_xclass};
+crossdcdg_subj.help = {'Data for this subject. The same parameters are used within subject.'};
+
+%--------------------------------------------------------------------------
+% wsubjs Data
+%--------------------------------------------------------------------------
+crossdcdg_dsubjs        = cfg_repeat;
+crossdcdg_dsubjs.tag    = 'wsubjs';
+crossdcdg_dsubjs.name   = 'Data';
+crossdcdg_dsubjs.help   = {'List of subjects.'};
+crossdcdg_dsubjs.values = {crossdcdg_subj};
+crossdcdg_dsubjs.num    = [1 Inf];
+
+
+%--------------------------------------------------------------------------
+% Cross decoding
+%--------------------------------------------------------------------------
+crossdcdg      = cfg_exbranch;
+crossdcdg.tag  = 'crossdecod';
+crossdcdg.name = 'Cross decoding';
+crossdcdg.val  = {crossdcdg_dsubjs crossdcdg_options};
+crossdcdg.help = {
+    'Cross decoding performed via the decoding toolbox.'
+    'If you want to perform cross decoding, select 1. For example, if you want to train  your decoder on conditions AX and BX, then decode on AY and BY.'
+    }';
+
+crossdcdg.prog = @prog_crossdcdg;
+crossdcdg.vout = @vout_crossdcdg;
 
 %% Make permutations
 %--------------------------------------------------------------------------
@@ -483,7 +812,7 @@ tdt_jobs.name   = 'The Decoding Toolbox';
 tdt_jobs.help   = {
     'This extension is an implementation of https://sites.google.com/site/tdtdecodingtoolbox/'
     };
-tdt_jobs.values  = { dcdg perm ttest nft };%nft
+tdt_jobs.values  = { dcdg crossdcdg perm ttest nft };%nft
 
 end
 
@@ -517,6 +846,38 @@ dep(1).tgt_spec   = cfg_findspec({{'filter','mat','strtype','e'}});
 
 dep(2).sname      = 'Result directory';
 dep(2).src_output = substruct('.','files', '()', {2}); %le pb semble venir de la fonction run des permutations, qui a besoin de certains champs dans son objet...
+dep(2).tgt_spec   = cfg_findspec({{'filter','dir','strtype','e'}});
+end % function
+
+%==========================================================================
+% crossdcdg
+%==========================================================================
+
+function out = prog_crossdcdg( job )
+
+fname = tdt_generate_output_fname('crossdcdg' );
+
+job.fname = fname;
+res_dir = tdt_run_crossdecoding(job);
+
+fname_cfg = fullfile(res_dir, fname);
+fname_res_dir = res_dir;
+
+% This output is for the Dependency system
+out       = struct;
+out.files = {fname_cfg fname_res_dir}; % <= this is the "target" of the Dependency
+end % function
+
+function dep = vout_crossdcdg( ~ )
+
+dep                 = cfg_dep;
+dep(1).sname        = 'Cross decoding results';
+dep(1).src_output   = substruct('.','files', '()', {1});
+dep(1).tgt_spec     = cfg_findspec({{'filter','mat','strtype','e'}});
+
+
+dep(2).sname      = 'Result directory';
+dep(2).src_output = substruct('.','files', '()', {2});
 dep(2).tgt_spec   = cfg_findspec({{'filter','dir','strtype','e'}});
 end % function
 
